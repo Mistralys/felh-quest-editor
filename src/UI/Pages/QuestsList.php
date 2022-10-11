@@ -17,6 +17,8 @@ class QuestsList extends BasePage
     public function __construct(QuestsCollection $collection)
     {
         $this->collection = $collection;
+
+        parent::__construct();
     }
 
     public function getTitle() : string

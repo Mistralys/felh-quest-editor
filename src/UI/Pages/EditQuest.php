@@ -14,6 +14,8 @@ class EditQuest extends BasePage
     public function __construct(Quest $quest)
     {
         $this->quest = $quest;
+
+        parent::__construct();
     }
 
     public const URL_NAME = 'edit';

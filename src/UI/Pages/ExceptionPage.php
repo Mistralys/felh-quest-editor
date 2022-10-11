@@ -16,6 +16,8 @@ class ExceptionPage extends BasePage
     public function __construct(Throwable $e)
     {
         $this->info = parseThrowable($e);
+
+        parent::__construct();
     }
 
     public function getTitle() : string
