@@ -24,25 +24,33 @@ class QuestReader
 
     public function parseFile(FileInfo $path) : void
     {
-        $data = XMLHelper::convertFile($path->requireExists()->requireReadable()->getPath())->toArray();
+        $data = $this->getFileData($path);
 
-        if(isset($data['QuestDef']))
-        {
-            foreach($data['QuestDef'] as $questDef)
-            {
-                $this->parseQuest($questDef, $path);
-            }
+        if($data === null) {
+            return;
         }
+
+        foreach($data as $questDef)
+        {
+            $this->parseQuest($questDef, $path);
+        }
+    }
+
+    public function getFileData(FileInfo $path) : ?array
+    {
+        $data = XMLHelper::convertFile(
+            $path
+                ->requireExists()
+                ->requireReadable()
+                ->getPath()
+        )
+            ->toArray();
+
+        return $data['QuestDef'] ?? array();
     }
 
     private function parseQuest(array $questData, FileInfo $sourceFile) : void
     {
-        /*
-        echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
-        print_r($questData);
-        echo '</pre>';
-        */
-        
         $quest = new Quest($this->detectAttributes($questData), $sourceFile);
 
         if(isset($questData['QuestObjectiveDef']))
