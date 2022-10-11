@@ -86,6 +86,24 @@ class FilesReader
         return $this;
     }
 
+    public function getRawData() : array
+    {
+        $reader = new QuestReader();
+        $result = array();
+
+        foreach($this->selected as $file)
+        {
+            $info = FileInfo::factory($file);
+
+            if($info->exists())
+            {
+                $result[$info->getPath()] = $reader->getFileData($info);
+            }
+        }
+
+        return $result;
+    }
+
     public function getCollection() : QuestsCollection
     {
         $reader = new QuestReader();
