@@ -9,6 +9,7 @@ use AppUtils\Interface_Stringable;
 class Icon implements Interface_Stringable
 {
     public const FA_STYLE_SOLID = 'solid';
+    public const FA_STYLE_REGULAR = 'regular';
 
     private string $type;
     private string $style = self::FA_STYLE_SOLID;
@@ -57,6 +58,18 @@ class Icon implements Interface_Stringable
     public function texts() : self
     {
         return $this->setType('quote-left');
+    }
+
+    public function graphics() : self
+    {
+        return $this
+            ->setStyle(self::FA_STYLE_REGULAR)
+            ->setType('images');
+    }
+
+    public function makeRegular() : self
+    {
+        return $this->setStyle(self::FA_STYLE_REGULAR);
     }
 
     public function makeSolid() : self
