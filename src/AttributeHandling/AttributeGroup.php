@@ -8,7 +8,9 @@ use AppUtils\ArrayDataCollection;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\BoolAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\IntAttribute;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\MedallionImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\MultiLineStringAttribute;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\QuestImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\StringAttribute;
 
 class AttributeGroup extends BaseGroup
@@ -72,6 +74,20 @@ class AttributeGroup extends BaseGroup
     public function registerInt(string $name, string $label) : IntAttribute
     {
         $def = new IntAttribute($this, $name, $label);
+        $this->addAttribute($def);
+        return $def;
+    }
+
+    public function registerMedallion(string $name, string $label) : MedallionImageAttribute
+    {
+        $def = new MedallionImageAttribute($this, $name, $label);
+        $this->addAttribute($def);
+        return $def;
+    }
+
+    public function registerQuestImage(string $name, string $label) : QuestImageAttribute
+    {
+        $def = new QuestImageAttribute($this, $name, $label);
         $this->addAttribute($def);
         return $def;
     }
