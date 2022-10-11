@@ -37,3 +37,11 @@ BODY{
 .monospace{
     font-family: monospace;
 }
+
+.graphic-preview{
+    margin-top: 10px;
+}
+
+.graphic-preview IMG{
+    width: 192px;
+}
