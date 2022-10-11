@@ -8,7 +8,8 @@ use Mistralys\FELHQuestEditor\UI;
 use Mistralys\FELHQuestEditor\UI\Pages\EditQuest;
 use Mistralys\FELHQuestEditor\UI\Pages\ExceptionPage;
 use Mistralys\FELHQuestEditor\UI\Pages\QuestsList;
-use function AppUtils\parseThrowable;
+use Mistralys\FELHQuestEditor\UI\Pages\ViewGraphicFile;
+use Mistralys\FELHQuestEditor\UI\Pages\ViewRawData;
 
 require_once 'vendor/autoload.php';
 require_once 'config.php';
@@ -24,17 +25,25 @@ try
     $request->setBaseURL(FELHQM_WEBSERVER_URL);
     $appName = 'FELH Quest Editor';
 
-    $collection = $reader->getCollection();
-
     $pageID = $request->getParam('page');
 
     switch ($pageID)
     {
+        case ViewGraphicFile::URL_NAME:
+            $page = new ViewGraphicFile();
+            break;
+
+        case ViewRawData::URL_NAME:
+            $page = new ViewRawData($reader);
+            break;
+
         case EditQuest::URL_NAME:
+            $collection = $reader->getCollection();
             $page = new EditQuest($collection->requireByRequest());
             break;
 
         default:
+            $collection = $reader->getCollection();
             $page = new QuestsList($collection);
             break;
     }
@@ -58,6 +67,14 @@ catch (Throwable $e)
         <link rel="stylesheet" href="vendor/fortawesome/font-awesome/css/all.min.css">
         <script src="vendor/components/jquery/jquery.min.js"></script>
         <script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="js/image-preview.js"></script>
+        <script>
+            const APP_URL = '<?php echo FELHQM_WEBSERVER_URL ?>';
+            const ImagePreviewer = new ImagePreview();
+            $(document).ready(function() {
+                <?php echo implode(PHP_EOL, UI::getJSAutoLoad()) ?>
+            });
+        </script>
     </head>
     <body>
         <h1><?php echo $page->getTitle() ?></h1>
