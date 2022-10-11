@@ -16,3 +16,9 @@ Web-based user interface to edit and create quests in the PC game _Fallen Enchan
 - Copy `config.dist.php` to `config.php` 
 - Edit configuration settings as necessary
 - Point a browser to the project folder
+
+## Credits
+
+"Broken image" image file by the Drupal project:  
+https://www.drupal.org/project/broken_image
+
