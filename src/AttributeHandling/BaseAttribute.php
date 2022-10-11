@@ -28,6 +28,13 @@ abstract class BaseAttribute
         $this->name = $name;
         $this->label = $label;
         $this->elementName = strtolower($this->group->getName().'_'.$this->getName());
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
 
     public function getGroup() : AttributeGroup
