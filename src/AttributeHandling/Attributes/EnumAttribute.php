@@ -6,30 +6,24 @@ namespace Mistralys\FELHQuestEditor\AttributeHandling\Attributes;
 
 use AppUtils\HTMLTag;
 use Mistralys\FELHQuestEditor\AttributeHandling\AttributeException;
-use Mistralys\FELHQuestEditor\AttributeHandling\AttributeGroup;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItem;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemContainerInterface;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemContainerTrait;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemGroup;
 use Mistralys\FELHQuestEditor\AttributeHandling\BaseAttribute;
+use function AppLocalize\t;
 
-class EnumAttribute extends BaseAttribute
+class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
 {
-    public const ERROR_CANNOT_GET_LABEL_BY_VALUE = 119501;
-
-    /**
-     * @var array<string,string>
-     */
-    private array $items;
+    use EnumItemContainerTrait;
 
     private string $default = '';
 
-    /**
-     * @param string $name
-     * @param string $label
-     * @param array<string,string> $items
-     */
-    public function __construct(AttributeGroup $group, string $name, string $label, array $items)
+    public function addEnumGroup(string $label) : EnumItemGroup
     {
-        parent::__construct($group, $name, $label);
-
-        $this->items = $items;
+        $group = new EnumItemGroup($this, $label);
+        $this->registerItem($group);
+        return $group;
     }
 
     public function getDefault() : string
@@ -38,14 +32,18 @@ class EnumAttribute extends BaseAttribute
             return $this->default;
         }
 
-        reset($this->items);
+        $default = $this->resolveDefaultItem();
 
-        return key($this->items);
+        if($default !== null) {
+            return $default->getID();
+        }
+
+        return '';
     }
 
     public function setDefault(string $default) : self
     {
-        if(isset($this->items[$default])) {
+        if($this->itemIDExists($default)) {
             $this->default = $default;
         }
 
@@ -54,7 +52,7 @@ class EnumAttribute extends BaseAttribute
 
     public function hasValue(string $value) : bool
     {
-        return isset($this->items[$value]);
+        return $this->itemIDExists($value);
     }
 
     /**
@@ -64,21 +62,7 @@ class EnumAttribute extends BaseAttribute
      */
     public function getLabelByValue(string $value) : string
     {
-        if(isset($this->items[$value])) {
-            return $this->items[$value];
-        }
-
-        throw new AttributeException(
-            'Cannot find enum item label by value.',
-            sprintf(
-                'The value [%s] does not exist in the items. '.PHP_EOL.
-                'Available values: '.PHP_EOL.
-                '- %s',
-                $value,
-                implode(PHP_EOL.'- ', array_keys($this->items))
-            ),
-            self::ERROR_CANNOT_GET_LABEL_BY_VALUE
-        );
+        return $this->getItemByID($value)->getLabel();
     }
 
     protected function displayElement() : void
@@ -89,22 +73,49 @@ class EnumAttribute extends BaseAttribute
             ->addClass('form-control');
 
         echo $select->renderOpen();
+        echo '<option value="">'.t('Please select...').'</option>';
+        $this->displayEnumItems($this->enumItems, $this->getFormValue());
+        echo $select->renderClose();
+    }
 
-        $elementValue = $this->getFormValue();
-
-        foreach($this->items as $optionValue => $label)
+    private function displayEnumItems(array $items, string $elementValue) : void
+    {
+        foreach($items as $item)
         {
-            $option =  HTMLTag::create('option')
-                ->attr('value', (string)$optionValue)
-                ->setContent($label);
-
-            if($optionValue === $elementValue) {
-                $option->prop('selected');
+            if($item instanceof EnumItemGroup)
+            {
+                $this->displayEnumGroup($item, $elementValue);
             }
+            else
+            {
+                $this->displayEnumItem($item, $elementValue);
+            }
+        }
+    }
 
-            echo $option;
+    private function displayEnumGroup(EnumItemGroup $group, string $elementValue) : void
+    {
+        $tag = HTMLTag::create('optgroup')
+            ->attr('label', $group->getLabel());
+
+        echo $tag->renderOpen();
+        $this->displayEnumItems($group->getItems(), $elementValue);
+        echo $tag->renderClose();
+    }
+
+    private function displayEnumItem(EnumItem $item, string $elementValue) : void
+    {
+        $optionValue = $item->getID();
+
+        $option =  HTMLTag::create('option')
+            ->setEmptyAllowed(true)
+            ->attr('value', $optionValue)
+            ->setContent($item->getLabel());
+
+        if($optionValue === $elementValue) {
+            $option->prop('selected');
         }
 
-        echo $select->renderClose();
+        echo $option;
     }
 }
