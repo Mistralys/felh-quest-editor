@@ -54,12 +54,11 @@ class AttributeGroup extends BaseGroup
     /**
      * @param string $name
      * @param string $label
-     * @param array<string,string> $items Value => Label pairs.
      * @return EnumAttribute
      */
-    public function registerEnum(string $name, string $label, array $items) : EnumAttribute
+    public function registerEnum(string $name, string $label) : EnumAttribute
     {
-        $def = new EnumAttribute($this, $name, $label, $items);
+        $def = new EnumAttribute($this, $name, $label);
         $this->addAttribute($def);
         return $def;
     }
