@@ -41,6 +41,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/geshi/geshi" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/twbs/bootstrap" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/fortawesome/font-awesome" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/application-localization" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/jtokenizer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
