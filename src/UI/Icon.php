@@ -60,6 +60,11 @@ class Icon implements Interface_Stringable
         return $this->setType('quote-left');
     }
 
+    public function treasure() : self
+    {
+        return $this->makeRegular()->setType('gem');
+    }
+
     public function graphics() : self
     {
         return $this
@@ -100,5 +105,15 @@ class Icon implements Interface_Stringable
     public function __toString() : string
     {
         return $this->render();
+    }
+
+    public function modifiers() : self
+    {
+        return $this->setType('sliders');
+    }
+
+    public function actions() : self
+    {
+        return $this->setType('code-branch');
     }
 }
