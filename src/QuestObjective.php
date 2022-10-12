@@ -34,7 +34,11 @@ class QuestObjective extends BaseRecord
 
         $settings->registerString('NextObjectiveID', 'Next objective ID');
 
-        $settings->registerString('ChoiceText', 'Choice text');
+        $texts = $this->attributeManager
+            ->addGroup('texts', 'Texts')
+            ->setIcon(UI::icon()->texts());
+
+        $texts->registerString('ChoiceText', 'Choice text');
 
         $this->choicesAttribute = $this->attributeManager
             ->addRecordGroup('choices', 'Choices')
