@@ -10,12 +10,29 @@ use Mistralys\FELHQuestEditor\UI\Pages\ExceptionPage;
 use Mistralys\FELHQuestEditor\UI\Pages\QuestsList;
 use Mistralys\FELHQuestEditor\UI\Pages\ViewGraphicFile;
 use Mistralys\FELHQuestEditor\UI\Pages\ViewRawData;
+use AppLocalize\Localization;
+use function AppLocalize\t;
 
 require_once 'vendor/autoload.php';
 require_once 'config.php';
 
 try
 {
+    $source = Localization::addSourceFolder(
+        'felhqe-classes',
+        'FELHQE Classes',
+        'FELHQE',
+        __DIR__.'/localization',
+        __DIR__.'/src'
+    );
+
+    Localization::configure(
+        __DIR__.'/localization/cache.json',
+        __DIR__.'/js'
+    );
+
+    Localization::setClientLibrariesCacheKey(UI::getVersion());
+
     UI::setShowXMLTags(FELHQM_SHOW_XML_TAGS);
 
     $reader = FilesReader::create()
@@ -23,7 +40,7 @@ try
 
     $request = new Request();
     $request->setBaseURL(FELHQM_WEBSERVER_URL);
-    $appName = 'FELH Quest Editor';
+    $appName = t('FELH Quest Editor');
 
     $pageID = $request->getParam('page');
 

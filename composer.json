@@ -11,6 +11,7 @@
   },
   "require": {
     "mistralys/application-utils": ">=2.2.5",
+    "mistralys/application-localization": ">=1.4.1",
     "twbs/bootstrap": ">=5.2.0",
     "components/jquery": ">=3.6.0",
     "fortawesome/font-awesome": ">=6.2.0"
