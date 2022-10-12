@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mistralys\FELHQuestEditor;
 
+use AppUtils\FileHelper;
 use Mistralys\FELHQuestEditor\UI\Icon;
 use newrelic\DistributedTracePayload;
 
@@ -16,9 +17,9 @@ class UI
      */
     private static array $jsAutoLoad = array();
 
-    public static function icon(string $id='') : Icon
+    public static function icon() : Icon
     {
-        return new Icon($id);
+        return new Icon('');
     }
 
     public static function setShowXMLTags(bool $enabled) : void
@@ -41,5 +42,17 @@ class UI
     public static function getJSAutoLoad() : array
     {
         return self::$jsAutoLoad;
+    }
+
+    private static ?string $version = null;
+
+    public static function getVersion() : string
+    {
+        if(!isset(self::$version))
+        {
+            self::$version = FileHelper::readContents(__DIR__ . '/../VERSION');
+        }
+
+        return self::$version;
     }
 }
