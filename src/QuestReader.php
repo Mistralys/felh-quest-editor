@@ -7,6 +7,10 @@ namespace Mistralys\FELHQuestEditor;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\XMLHelper;
+use Mistralys\FELHQuestEditor\CommonRecords\GameModifier;
+use Mistralys\FELHQuestEditor\CommonRecords\GameModifierContainerInterface;
+use Mistralys\FELHQuestEditor\CommonRecords\Treasure;
+use Mistralys\FELHQuestEditor\CommonRecords\TreasureContainerInterface;
 
 class QuestReader
 {
@@ -59,6 +63,11 @@ class QuestReader
             {
                 $this->parseObjective($quest, $objectiveDef);
             }
+        }
+
+        if(isset($questData['Treasure']))
+        {
+            $this->parseTreasure($quest, $questData['Treasure']);
         }
 
         $this->quests->add($quest);
@@ -114,5 +123,29 @@ class QuestReader
         }
 
         return ArrayDataCollection::create($attribs);
+    }
+
+    private function parseTreasure(TreasureContainerInterface $container, array $gameModifiers) : void
+    {
+        $treasure = new Treasure(new ArrayDataCollection(array()));
+
+        // Ensure it's a list
+        if(!isset($gameModifiers[0])) {
+            $gameModifiers = array($gameModifiers);
+        }
+
+        foreach($gameModifiers as $gameModifier)
+        {
+            $this->parseGameModifier($treasure, $gameModifier['GameModifier']);
+        }
+
+        $container->addTreasure($treasure);
+    }
+
+    private function parseGameModifier(GameModifierContainerInterface $container, array $modifierDef) : void
+    {
+        $modifier = new GameModifier(ArrayDataCollection::create($modifierDef));
+
+        $container->addGameModifier($modifier);
     }
 }
