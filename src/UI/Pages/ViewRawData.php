@@ -18,6 +18,8 @@ class ViewRawData extends BasePage
     public function __construct(FilesReader $reader)
     {
         $this->reader = $reader;
+
+        parent::__construct();
     }
 
     public function getTitle() : string
@@ -42,6 +44,8 @@ class ViewRawData extends BasePage
                     <h2 class="accordion-header" id="<?php echo $jsID ?>-heading">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $jsID ?>-el" aria-expanded="true" aria-controls="<?php echo $jsID ?>-el">
                             <?php echo FileHelper::relativizePath($file, FELHQM_GAME_FOLDER) ?>
+                            &#160;
+                            <span class="muted">(<?php echo count($quests) ?>)</span>
                         </button>
                     </h2>
                     <div id="<?php echo $jsID ?>-el" class="accordion-collapse collapse" aria-labelledby="<?php echo $jsID ?>-heading" data-bs-parent="#<?php echo $containerID ?>">
@@ -50,7 +54,7 @@ class ViewRawData extends BasePage
                             foreach($quests as $quest)
                             {
                                 ?>
-                                <pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;max-height:500px;overflow:auto"><?php print_r($quest) ?></pre>
+                                <pre class="quest-data"><?php print_r($quest) ?></pre>
                                 <?php
                             }
                             ?>

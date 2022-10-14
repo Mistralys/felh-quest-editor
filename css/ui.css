@@ -1,5 +1,9 @@
 BODY{
-    padding:2rem;
+    padding: 6rem 2rem 2rem;
+}
+
+.muted{
+    color:#a1a1a1;
 }
 
 .element-description{
@@ -44,4 +48,13 @@ BODY{
 
 .graphic-preview IMG{
     width: 192px;
+}
+
+.quest-data{
+    max-height:500px;
+    overflow:auto;
+    background: #fafafa;
+    padding: 4px;
+    font-size: 11px;
+    line-height: 11px;
 }
