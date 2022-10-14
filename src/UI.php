@@ -55,4 +55,13 @@ class UI
 
         return self::$version;
     }
+
+    public static function bool(bool $boolean) : string
+    {
+        if($boolean === true) {
+            return 'YES';
+        }
+
+        return 'NO';
+    }
 }
