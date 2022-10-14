@@ -42,9 +42,9 @@ try
     $request->setBaseURL(FELHQM_WEBSERVER_URL);
     $appName = t('FELH Quest Editor');
 
-    $pageID = $request->getParam('page');
+    $activePageID = $request->getParam('page');
 
-    switch ($pageID)
+    switch ($activePageID)
     {
         case ViewGraphicFile::URL_NAME:
             $page = new ViewGraphicFile();
@@ -60,6 +60,7 @@ try
             break;
 
         default:
+            $activePageID = QuestsList::URL_NAME;
             $collection = $reader->getCollection();
             $page = new QuestsList($collection);
             break;
@@ -94,6 +95,38 @@ catch (Throwable $e)
         </script>
     </head>
     <body>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><?php echo $appName ?></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <?php
+                        $navItems = array(
+                            QuestsList::URL_NAME => t('Quests list'),
+                            ViewRawData::URL_NAME => t('Raw data')
+                        );
+
+                        foreach ($navItems as $urlName => $label)
+                        {
+                            $isActive = $urlName === $activePageID;
+
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php if($isActive) { echo 'active'; } ?>" href="?page=<?php echo $urlName ?>">
+                                    <?php echo $label ?>
+                                </a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
         <h1><?php echo $page->getTitle() ?></h1>
         <?php echo $content ?>
     </body>
