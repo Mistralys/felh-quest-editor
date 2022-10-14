@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\UI\Pages;
 
 use Mistralys\FELHQuestEditor\QuestsCollection;
+use Mistralys\FELHQuestEditor\UI;
 use Mistralys\FELHQuestEditor\UI\BasePage;
 use function AppUtils\sb;
 
@@ -34,6 +35,7 @@ class QuestsList extends BasePage
             <tr>
                 <th>ID</th>
                 <th>Label</th>
+                <th>Repeatable?</th>
                 <th>Tactical map</th>
                 <th>File</th>
             </tr>
@@ -47,6 +49,7 @@ class QuestsList extends BasePage
                 <tr>
                     <td><?php echo $quest->getInternalName() ?></td>
                     <td><?php echo sb()->link($quest->getDisplayName(), $quest->getURLEdit()) ?></td>
+                    <td><?php echo UI::bool($quest->isRepeatable()) ?></td>
                     <td><?php echo $quest->getTacticalMapLabel() ?></td>
                     <td><?php echo $quest->getSourceFile()->getBaseName() ?></td>
                 </tr>
