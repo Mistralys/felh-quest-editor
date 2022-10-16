@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Mistralys\FELHQuestEditor\UI;
 
+use AppUtils\Interface_Classable;
 use AppUtils\Interface_Stringable;
+use AppUtils\Traits_Classable;
 
-class Icon implements Interface_Stringable
+class Icon implements Interface_Stringable , Interface_Classable
 {
+    use Traits_Classable;
+
     public const FA_STYLE_SOLID = 'solid';
     public const FA_STYLE_REGULAR = 'regular';
 
@@ -91,9 +95,10 @@ class Icon implements Interface_Stringable
     public function render() : string
     {
         return sprintf(
-            '<i class="fa-%s fa-%s"></i>',
+            '<i class="fa-%s fa-%s %s"></i>',
             $this->style,
-            $this->type
+            $this->type,
+            $this->classesToString()
         );
     }
 
@@ -115,5 +120,40 @@ class Icon implements Interface_Stringable
     public function actions() : self
     {
         return $this->setType('code-branch');
+    }
+
+    public function conditions() : self
+    {
+        return $this->setType('circle-question');
+    }
+
+    public function nextObjective() : self
+    {
+        return $this->setType('play');
+    }
+
+    public function lastObjective() : self
+    {
+        return $this->setType('stop');
+    }
+
+    public function units() : self
+    {
+        return $this->setType('spider');
+    }
+
+    public function encounter() : self
+    {
+        return $this->setType('skull');
+    }
+
+    public function quest() : self
+    {
+        return $this->setType('tower-observation');
+    }
+
+    public function values() : self
+    {
+        return $this->setType('flask-vial');
     }
 }
