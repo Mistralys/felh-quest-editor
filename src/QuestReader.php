@@ -7,10 +7,13 @@ namespace Mistralys\FELHQuestEditor;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\XMLHelper;
+use Mistralys\FELHQuestEditor\CommonRecords\Encounter;
 use Mistralys\FELHQuestEditor\CommonRecords\GameModifier;
 use Mistralys\FELHQuestEditor\CommonRecords\GameModifierContainerInterface;
+use Mistralys\FELHQuestEditor\CommonRecords\Objective;
 use Mistralys\FELHQuestEditor\CommonRecords\Treasure;
 use Mistralys\FELHQuestEditor\CommonRecords\TreasureContainerInterface;
+use Mistralys\FELHQuestEditor\CommonRecords\UnitInstance;
 
 class QuestReader
 {
@@ -85,18 +88,36 @@ class QuestReader
 
             foreach($objectiveData['QuestChoiceDef'] as $idx => $choiceData)
             {
-                if(is_string($idx)) {
-                    echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
-                    print_r($objectiveData);
-                    echo '</pre>';
+                $choice = new QuestChoice($objective, $idx, $this->detectAttributes($choiceData));
+                $objective->addChoice($choice);
+
+                if(isset($choiceData['Encounter'])) {
+                    $this->parseEncounter($choice, $choiceData['Encounter']);
+                }
+            }
+
+            if(isset($questData['Treasure']))
+            {
+                $this->parseTreasure($objective, $questData['Treasure']);
+            }
+        }
+
+        if(isset($objectiveData['QuestConditionDef']))
+        {
+            if(!isset($objectiveData['QuestConditionDef'][0])) {
+                $objectiveData['QuestConditionDef'] = array($objectiveData['QuestConditionDef']);
+            }
+
+            foreach($objectiveData['QuestConditionDef'] as $conditionData)
+            {
+                $conditionDef = new QuestCondition($objective, $this->detectAttributes($conditionData));
+
+                if(isset($conditionData['Objective']))
+                {
+                    $conditionDef->setObjective(new Objective($this->detectAttributes($conditionData['Objective'])));
                 }
 
-                
-                $choiceDef = new QuestChoice($objective, $idx, $this->detectAttributes($choiceData));
-
-                // treasure?
-
-                $objective->addChoice($choiceDef);
+                $objective->addCondition($conditionDef);
             }
         }
 
@@ -144,8 +165,30 @@ class QuestReader
 
     private function parseGameModifier(GameModifierContainerInterface $container, array $modifierDef) : void
     {
-        $modifier = new GameModifier(ArrayDataCollection::create($modifierDef));
+        $modifier = new GameModifier($this->detectAttributes($modifierDef));
 
         $container->addGameModifier($modifier);
+    }
+
+    private function parseEncounter(QuestChoice $choice, $encounterData) : void
+    {
+        $encounter = new Encounter($choice, $this->detectAttributes($encounterData));
+
+        $choice->setEncounter($encounter);
+
+        if(!isset($encounterData['UnitInstance']))
+        {
+            return;
+        }
+        
+        if(!isset($encounterData['UnitInstance'][0])) {
+            $encounterData['UnitInstance'] = array($encounterData['UnitInstance']);
+        }
+
+        foreach($encounterData['UnitInstance'] as $unitData)
+        {
+            $unit = new UnitInstance($encounter, $this->detectAttributes($unitData));
+            $encounter->addUnitInstance($unit);
+        }
     }
 }
