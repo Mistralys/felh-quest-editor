@@ -11,10 +11,24 @@ class RecordGroup extends BaseGroup
      */
     private array $records = array();
     private string $recordTypeLabel = '';
+    private int $minRecords = 0;
+    private int $maxRecords = 0;
 
     public function addRecord(BaseRecord $record) : self
     {
         $this->records[] = $record;
+        return $this;
+    }
+
+    public function setMinRecords(int $amount) : self
+    {
+        $this->minRecords = $amount;
+        return $this;
+    }
+
+    public function setMaxRecords(int $amount) : self
+    {
+        $this->maxRecords = $amount;
         return $this;
     }
 
@@ -45,5 +59,15 @@ class RecordGroup extends BaseGroup
     public function canAddRecords() : bool
     {
         return !empty($this->recordTypeLabel);
+    }
+
+    public function getMaxRecords() : int
+    {
+        return $this->maxRecords;
+    }
+
+    public function getMinRecords() : int
+    {
+        return $this->minRecords;
     }
 }
