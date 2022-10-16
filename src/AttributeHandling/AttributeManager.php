@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\AttributeHandling;
 
 use AppUtils\ArrayDataCollection;
+use AppUtils\ClassHelper;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
+use Mistralys\FELHQuestEditor\UI;
+use function AppLocalize\t;
 
 class AttributeManager
 {
@@ -22,8 +26,14 @@ class AttributeManager
         $this->attribs = $attribs;
     }
 
+    public function getAttributes() : ArrayDataCollection
+    {
+        return $this->attribs;
+    }
+
     public function addGroup(string $name, string $label) : AttributeGroup
     {
+        $data = $this->attribs->getData();
         $group = new AttributeGroup($name, $label, $this->attribs);
         $this->registerGroup($group);
         return $group;
@@ -42,6 +52,18 @@ class AttributeManager
         return new AttributeForm($this);
     }
 
+    public function addGroupSettings() : AttributeGroup
+    {
+        return $this->addGroup('settings', t('Settings'))
+            ->setIcon(UI::icon()->settings());
+    }
+
+    public function addGroupGraphics() : AttributeGroup
+    {
+        return $this->addGroup('graphics', t('Graphics'))
+            ->setIcon(UI::icon()->graphics());
+    }
+
     public function addRecordGroup(string $name, string $label) : RecordGroup
     {
         $group = new RecordGroup($name, $label);
@@ -52,6 +74,14 @@ class AttributeManager
     private function registerGroup(BaseGroup $group) : void
     {
         $this->groups[$group->getName()] = $group;
+    }
+
+    public function getEnumByName(string $name) : EnumAttribute
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            EnumAttribute::class,
+            $this->getAttributeByName($name)
+        );
     }
 
     /**
