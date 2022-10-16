@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\DataTypes;
 
 use Mistralys\FELHQuestEditor\DataTypes\TacticalMapLocations\TacticalMapLocation;
+use function AppLocalize\t;
 
 /**
  * @method TacticalMapLocation[] getAll()
@@ -21,6 +22,11 @@ class TacticalMapLocations extends BaseDataTypeCollection
         }
 
         return self::$instance;
+    }
+
+    public function getCollectionLabel() : string
+    {
+        return t('Tactical map locations');
     }
 
     protected function getDataTypeClass() : string
