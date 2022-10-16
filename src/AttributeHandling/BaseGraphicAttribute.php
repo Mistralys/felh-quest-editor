@@ -20,6 +20,7 @@ abstract class BaseGraphicAttribute extends BaseAttribute
      * @var string[]|null
      */
     private ?array $imagePaths = null;
+    private bool $extension = true;
 
     abstract protected function getGfxPathRelative() : string;
 
@@ -35,6 +36,12 @@ abstract class BaseGraphicAttribute extends BaseAttribute
         return $this->sourceFolder;
     }
 
+    public function enableExtension(bool $enabled=true) : self
+    {
+        $this->extension = $enabled;
+        return $this;
+    }
+    
     /**
      * @return FileInfo[]
      * @throws FileHelper_Exception
@@ -88,10 +95,11 @@ abstract class BaseGraphicAttribute extends BaseAttribute
         foreach($images as $image)
         {
             $info = FileInfo::factory($image);
-            $optionValue = $info->getName();
+            $optionValue = $this->resolveValue($info);
 
             $option =  HTMLTag::create('option')
                 ->attr('value', $optionValue)
+                ->attr('data-source-width', (string)getimagesize($image->getPath())[0])
                 ->setContent($info->getBaseName());
 
             if($optionValue === $elementValue) {
@@ -102,6 +110,15 @@ abstract class BaseGraphicAttribute extends BaseAttribute
         }
 
         echo $select->renderClose();
+    }
+
+    private function resolveValue(FileInfo $file) : string
+    {
+        if($this->extension) {
+            return $file->getName();
+        }
+
+        return $file->getBaseName();
     }
 
     public function getDescription() : string
