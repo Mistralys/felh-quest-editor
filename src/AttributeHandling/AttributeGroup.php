@@ -7,11 +7,15 @@ namespace Mistralys\FELHQuestEditor\AttributeHandling;
 use AppUtils\ArrayDataCollection;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\BoolAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\IconImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\IntAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\MedallionImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\MultiLineStringAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\QuestImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\StringAttribute;
+use Mistralys\FELHQuestEditor\DataTypes\ChampionUnits;
+use Mistralys\FELHQuestEditor\DataTypes\RegularUnits;
+use function AppLocalize\t;
 
 class AttributeGroup extends BaseGroup
 {
@@ -33,8 +37,15 @@ class AttributeGroup extends BaseGroup
     private function addAttribute(BaseAttribute $attribute) : void
     {
         $name = $attribute->getName();
+
+        $value = '';
+        $keyValue = $this->values->getKey($name);
+        if(!is_array($keyValue)) {
+            $value = (string)$keyValue;
+        }
+
         $this->attribDefs[$name] = $attribute;
-        $attribute->setValue($this->values->getString($name));
+        $attribute->setValue($value);
     }
 
     public function registerString(string $name, string $label) : StringAttribute
@@ -47,6 +58,15 @@ class AttributeGroup extends BaseGroup
     public function registerMultiLineString(string $name, string $label) : MultiLineStringAttribute
     {
         $def = new MultiLineStringAttribute($this, $name, $label);
+        $this->addAttribute($def);
+        return $def;
+    }
+
+    public function registerUnitsEnum(string $name, string $label) : EnumAttribute
+    {
+        $def = new EnumAttribute($this, $name, $label);
+        $def->addDataCollection(new RegularUnits());
+        $def->addDataCollection(new ChampionUnits());
         $this->addAttribute($def);
         return $def;
     }
@@ -87,6 +107,13 @@ class AttributeGroup extends BaseGroup
     public function registerQuestImage(string $name, string $label) : QuestImageAttribute
     {
         $def = new QuestImageAttribute($this, $name, $label);
+        $this->addAttribute($def);
+        return $def;
+    }
+
+    public function registerIconImage(string $name, string $label) : IconImageAttribute
+    {
+        $def = new IconImageAttribute($this, $name, $label);
         $this->addAttribute($def);
         return $def;
     }
