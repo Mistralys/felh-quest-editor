@@ -7,117 +7,200 @@ namespace Mistralys\FELHQuestEditor\CommonRecords;
 use Mistralys\FELHQuestEditor\AttributeHandling\BaseRecord;
 use Mistralys\FELHQuestEditor\DataTypes\GoodieHuts;
 use Mistralys\FELHQuestEditor\UI;
+use Mistralys\FELHQuestEditor\UI\Icon;
 use function AppLocalize\t;
 use function AppUtils\sb;
 
 class GameModifier extends BaseRecord
 {
+    public const TAG_MODIFIER_TYPE = 'ModType';
+    public const TAG_INTERNAL_NAME = 'InternalName';
+    public const TAG_ACTION = 'Attribute';
+    public const TAG_STRING_VALUE = 'StrVal';
+    public const TAG_STRING_VALUE_2 = 'StrVal2';
+    public const TAG_BOOLEAN_VALUE = 'BoolVal1';
+    public const TAG_INTEGER_VALUE = 'Value';
+    public const TAG_RADIUS = 'Radius';
+    public const TAG_UNIT_CLASS = 'Unitclass';
+
     protected function registerAttributes() : void
     {
-        $actions = $this->attributeManager->addGroup('actions', 'Actions')
-            ->setIcon(UI::icon()->actions());
+        $settings = $this->attributeManager->addGroupSettings();
 
-        $actions->registerString('InternalName', 'Internal name')
+        $settings->registerString(self::TAG_INTERNAL_NAME, t('Internal name'))
             ->setRequired();
 
-        $actions->registerEnum('ModType', 'Modifier target')
-            ->addEnumItem('Map', 'Map')
-            ->addEnumItem('Player', 'Player')
-            ->addEnumItem('Unit', 'Unit')
-            ->addEnumItem('Resource', 'Resource')
-            ->addEnumItem('GiveItem', 'Give item')
+        $actions = $this->attributeManager->addGroup('actions', t('Actions'))
+            ->setIcon(UI::icon()->actions());
+
+        $actions->registerEnum(self::TAG_MODIFIER_TYPE, t('Modifier type'))
+            ->addEnumItemR('Map', t('Map modifier'))
+                ->addDependencySet(t('Create a goodie hut'))
+                    ->addDependency(self::TAG_STRING_VALUE, t('Enter the goodie hut identifier.'))
+                    ->addDependency(self::TAG_UNIT_CLASS, t('Choose the type of hut to spawn.'))
+                    ->addDependency(self::TAG_RADIUS, t('Set the tile radius in which to spawn it.'))
+                    ->done()
+                ->addDependencySet(t('Spawn a monster'))
+                    ->addDependency(self::TAG_INTEGER_VALUE, t('Enter the unit level.'))
+                    ->addDependency(self::TAG_UNIT_CLASS, t('Enter the unit identifier.'))
+                    ->addDependency(self::TAG_RADIUS, t('Set the tile radius in which to spawn it.'))
+                    ->done()
+                ->addDependencySet(t('Create a resource'))
+                    ->addDependency(self::TAG_STRING_VALUE, t('Enter the resource identifier.'))
+                    ->addDependency(self::TAG_INTEGER_VALUE, t('Enter the amount of the resource to add.'))
+                    ->addDependency(self::TAG_RADIUS, t('Enter the tile radius in which to spawn it.'))
+                    ->done()
+                ->done()
+            ->addEnumItem('Player', t('Player modifier'))
+            ->addEnumItem('Unit', t('Unit modifier'))
+            ->addEnumItem('Resource', t('Resource modifier'))
+            ->addEnumItemR('GiveItem', t('Item modifier'))
+                ->addDependency(self::TAG_ACTION, t('Enter the item identifier.'))
+                ->addDependency(self::TAG_STRING_VALUE, t('Enter a custom name for the item.'), true)
+                ->addDependency(self::TAG_INTEGER_VALUE, t('Usually set to 100, for unknown reasons.'))
+                ->done()
             ->setDescription(sb()
-                ->bold('Give item:')
-                ->ul(array(
-                    (string)sb()
-                    ->add('Specific item:')
-                    ->ul(array(
-                        'Enter the name in the Attribute field.',
-                        'Optional: Set a custom item name in the string value field.',
-                        'Optional: Add a value in the integer value (often set to 100).'
-                    )),
-                ))
                 ->bold('Map:')
+                ->nl()
+                ->note()
+                ->add('Select the map action in the action field.')
                 ->ul(array(
                     sb()
-                        ->add('Create goodie hut:')
+                        ->add('Create world property:')
                         ->ul(array(
-                            'Select the attribute "Create goodie hut".',
-                            'The name of the hut can be set in the string value field.',
-                            'The unit class is used to define the type of hut to spawn.',
-                            'Set the radius in which it will spawn.'
+                            sprintf(
+                                'Set the property name in the string value (e.g. %1$s)',
+                                sb()->code('TD_Groundfire')
+                            ),
+                            'Set the value in the integer field.',
+                            'Set the radius to create it in (is often -1).'
                         )),
                     sb()
-                        ->add('Spawn monster:')
+                        ->add('Block a map tile:')
                         ->ul(array(
-                            'Select the attribute "Spawn monster".',
-                            'Set the unit level in the integer value.',
-                            'Set the unit name in the unit class field.',
-                            'Set the radius in which it will spawn.'
+                            'Set the block state in the boolean value (true=blocked, false=unblocked).',
+                            'Set the radius for the tile (1 for the current tile).'
                         ))
                 ))
-                ->bold('Unit:')
+                ->bold('Unit mo:')
+                ->nl()
+                ->note()
+                ->add('Select the unit action in the action field.')
                 ->ul(array(
                     sb()
                         ->add('Give experience:')
                         ->ul(array(
-                            'Choose the attribute "Give experience"',
                             'Set the amount in the integer value.'
                         )),
                     sb()
                         ->add('Add unit to current army:')
                         ->ul(array(
-                            'Choose the corresponding attribute',
                             'Set the unit name in the string value.',
                             'Choose the unit class "Unit" for a regular unit.',
                             'Choose the unit class "Champion" for a hero unit.',
                             'Optional: Set the unit\'s level in the integer value.',
                             'Optional: Set a custom unit name in the second string value.'
+                        )),
+                    sb()
+                        ->add('Change hit points:')
+                        ->ul(array(
+                            'Set the amount in the integer value (can be negative).'
                         ))
                 ))
                 ->bold('Resource:')
+                ->nl()
+                ->note()
+                ->add('Select the resource action in the action field.')
                 ->ul(array(
-                    (string)sb()
+                    sb()
                         ->add('Add fame:')
                         ->ul(array(
-                            'Choose the attribute "Fame"',
+                            'Set the amount in the integer value.'
+                        )),
+                    sb()
+                        ->add('Change population:')
+                        ->ul(array(
+                            'Set the amount in the integer value (negative amounts allowed).'
+                        )),
+                    sb()
+                        ->add('Add metal:')
+                        ->ul(array(
                             'Set the amount in the integer value.'
                         ))
                 ))
                 ->bold('Player:')
+                ->nl()
+                ->note()
+                ->add('Select the player action in the action field.')
                 ->ul(array(
                     sb()
                         ->add('Give gold:')
                         ->ul(array(
-                            'Choose the attribute "Give gold"',
                             'Set the amount in the integer value.'
                         )),
                     sb()
                         ->add('Unlock improvement:')
                         ->ul(array(
-                            'Choose the attribute "Unlock improvement"',
                             'Set the name of the improvement in the string value.'
+                        )),
+                    sb()
+                        ->add('Unlock spell:')
+                        ->ul(array(
+                            'Set the name of the spell in the string value.'
+                        )),
+                    sb()
+                        ->add('Change ability bonus:')
+                        ->ul(array(
+                            'Set the target ability name in the string value.',
+                            'Set the amount in the integer field (negative values allowed).'
+                        )),
+                    sb()
+                        ->add('All units gain a level:')
+                        ->ul(array(
+                            sprintf(
+                                'Set the target units class in the string value (e.g. %s).',
+                                sb()->code('WildCreatures')
+                            ),
+                            'Set the amount of levels in the integer value.'
+                        )),
+                    sb()
+                        ->add('Damage all units:')
+                        ->ul(array(
+                            'Set the amount of damage in the integer value.'
                         ))
                 ))
             );
 
-        $actions->registerEnum('Attribute','Target action')
+        $actions->registerEnum(self::TAG_ACTION,t('Action to take'))
+            ->setDescription(t('Selects the action to take, which must match the selected modifier type.'))
             ->addEnumGroup('Unit actions')
                 ->addEnumItem('GiveExperience', 'Give experience')
                 ->addEnumItem('UnitJoinArmy', ' Add new unit to current army')
+                ->addEnumItem('CurHealth', 'Change hit points')
                 ->done()
             ->addEnumGroup('Resource actions')
                 ->addEnumItem('Fame', 'Increase fame')
+                ->addEnumItem('Population', 'Change population')
+                ->addEnumItem('Metal', 'Add metal')
                 ->done()
             ->addEnumGroup('Map actions')
                 ->addEnumItem('CreateGoodieHut', 'Create goodie hut')
                 ->addEnumItem('CreateShard', 'Create shard')
                 ->addEnumItem('SpawnMonster', 'Spawn monster')
+                ->addEnumItem('CreateResourceHoard', 'Create resource')
+                ->addEnumItem('AllPlayersDeclareWar', 'All players declare mutual war')
+                ->addEnumItem('CreateWorldProp', 'Create world property')
+                ->addEnumItem('AllPlayersResearchComplete', 'All players complete their current research')
+                ->addEnumItem('AllCitiesUnitTrainingComplete', 'All cities finish training their current unit')
+                ->addEnumItem('BlockTile', 'Block a map tile')
                 ->done()
             ->addEnumGroup('Player actions')
                 ->addEnumItem('UnlockSpell', 'Unlock a spell')
                 ->addEnumItem('Treasury', 'Give gold')
                 ->addEnumItem('UnlockImprovement', 'Unlock an improvement')
+                ->addEnumItem('AbilityBonus', 'Change ability bonus')
+                ->addEnumItem('AllUnitsGainLevel', 'All units gain a level')
+                ->addEnumItem('DamageAllUnits', 'Damage all units')
                 ->done();
 
         $itemNames = array(
@@ -129,39 +212,50 @@ class GameModifier extends BaseRecord
             'CloakOfStars',
             'Loot_SpiderSilk',
             'Longsword_Shadow',
-            'KiteShield_Obsidian'
+            'KiteShield_Obsidian',
+            'StuddedCollar_Amethyst',
+            'Dagger_Butchers',
+            'Staff_Freezing',
+            'Staff_Furnace',
+            'Staff_Banishing',
+            'Broadsword_Berserkers',
+            'BattleAxe',
+            'RoundShield_Ghost',
+            'ArcticWolfCloak',
+            'Potion_Restoration',
+            'TildaHerbs',
+            'Warhammer_Blessed',
+            'EreogsToken',
+            'BandOfAgility',
+            'Loot_DeadRat',
+            'Club_Doom',
+            'Longsword_Shadow',
+            'Longsword_Assassins',
+            'Mount_Pony',
+            'Shortbow_Ignys',
+            'Mushroom',
+            'Axe_Ignys',
+            'AmuletOfLife',
+            'Longbow_Guiding',
+            'WarBoarMount',
+            'KiteShield_PhoenixShield',
+            'Shortsword_Hunters',
+            'Shortbow_Hunters',
+            'PlateHelmet_Ivory',
+            'PerformersHorse',
+            'BootsOfTheSpider',
+            'PlateBreastpiece_Impenetrable',
+            'Greatsword_Void',
+            'Longsword_Razor',
+            'Maul_CurgensHammer',
+            'Loot_DragonEye',
+            'Maul_Doom'
         );
 
-        $spellNames = array(
-            'ManaBlast',
-            'ManaShield',
-            'Confusion',
-            'VatulasDragonslayer'
-        );
-
-        $unitNames = array(
-            'Umberdoth',
-            'EbbenWolf',
-            'FireElemental',
-            'SwarmSpider',
-            'Wolf',
-            'Butcherman',
-            'SkeletonC_Company',
-            'ClambercoilDragon',
-            'Ignys',
-            'Naja',
-
-            'Unit_Juggernaut_Ongr',
-            'Unit_Quest_Archer',
-            'Unit_Quest_Noblewoman',
-            'Quest_Spearman',
-            'Unit_Quest_Pioneer_Krax',
-
-            'Champion_Araine',
-            'Champion_Daxus',
-            'Champion_Ascian',
-            'Mausolos', // Champion
-            'Champion_Bacco'
+        $resources = array(
+            'Resource_TwlightBees',
+            'Metal',
+            'Gold'
         );
 
         $improvementNames = array(
@@ -172,41 +266,110 @@ class GameModifier extends BaseRecord
             'ElementalAirShard02'
         );
 
-        $settings = $this->attributeManager->addGroup('settings', t('Settings'))
-            ->setIcon(UI::icon()->settings());
-
-        $settings->registerString('StrVal', 'Value: String 1')
+        $values = $this->attributeManager->addGroup('values', t('Values'))
+            ->setIcon(UI::icon()->values())
             ->setDescription(sb()
-                ->add('Item levels:')
-                ->ul(array(
-                    'Uncommon',
-                    'Rare'
-                ))
+                ->t('The fields are used to enter any values that the selected action may need.')
+                ->t('Refer to the action fields for hints on which values are needed, and how to fill them.')
             );
 
-        $settings->registerString('StrVal2', 'Value: String 2');
+        $values->registerString(self::TAG_STRING_VALUE, 'Value: String 1');
+        $values->registerString(self::TAG_STRING_VALUE_2, 'Value: String 2');
+        $values->registerBool(self::TAG_BOOLEAN_VALUE, 'Value: Boolean');
+        $values->registerInt(self::TAG_INTEGER_VALUE, 'Value: Integer');
 
-        $settings->registerInt('Value', 'Value: Integer');
-        $settings->registerEnum('Unitclass','Unit class')
+        $values->registerEnum(self::TAG_UNIT_CLASS, t('Unit class'))
             ->addEnumGroup('Map locations')
-                ->addDataCollection(GoodieHuts::create())
-                ->done()
+            ->addDataCollection(GoodieHuts::create())
+            ->done()
             ->addEnumGroup('Unit classes')
-                ->addEnumItem('Unit', 'Regular unit')
-                ->addEnumItem('Champion', 'Champion unit')
-                ->done();
+            ->addEnumItem('Unit', 'Regular unit')
+            ->addEnumItem('Champion', 'Champion unit')
+            ->done();
 
-        $settings->registerInt('Radius', 'Radius')
-            ->setDescription(sb()
-                ->add('Use with:')
-                ->ul(array(
-                    'Type[Map]->Attribute[CreateGoodieHut]'
-                ))
-            );
+        $values->registerInt(self::TAG_RADIUS, t('Radius'));
+    }
+
+    public function getActionID() : string
+    {
+        return $this->attributes->getString(self::TAG_ACTION);
+    }
+
+    public function getActionLabel() : string
+    {
+        $actionID = $this->getActionID();
+
+        if(!empty($actionID))
+        {
+            $enum = $this->attributeManager->getEnumByName(self::TAG_ACTION);
+
+            if($enum->hasValue($actionID))
+            {
+                return $enum->getLabelByValue($actionID);
+            }
+
+            return $actionID;
+        }
+
+        return '';
+    }
+
+    public function getModifierType() : string
+    {
+        return $this->attributes->getString(self::TAG_MODIFIER_TYPE);
+    }
+
+    public function getModifierLabel() : string
+    {
+        $type = $this->getModifierType();
+
+        if(!empty($type))
+        {
+            return $this->attributeManager
+                ->getEnumByName(self::TAG_MODIFIER_TYPE)
+                ->getLabelByValue($type);
+        }
+
+        return '';
+    }
+
+    public function getRadius() : int
+    {
+        return $this->attributes->getInt(self::TAG_RADIUS);
     }
 
     public function getLabel() : string
     {
-        return 'Game modifier';
+        return t('Game modifier');
+    }
+
+    public function getIcon() : ?Icon
+    {
+        return UI::icon()->modifiers();
+    }
+
+    public function getIdentifier() : string
+    {
+        return $this->attributes->getString(self::TAG_INTERNAL_NAME);
+    }
+
+    public function getSubLabel() : string
+    {
+        $label = sb();
+
+        $label->code($this->getIdentifier());
+
+        $modifierLabel = $this->getModifierLabel();
+        $actionLabel = $this->getActionLabel();
+
+        if(!empty($modifierLabel) && !empty($actionLabel)) {
+            $label
+                ->nl()
+                ->add($modifierLabel)
+                ->add(':')
+                ->add($actionLabel);
+        }
+
+        return (string)$label;
     }
 }

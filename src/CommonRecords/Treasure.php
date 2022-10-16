@@ -7,6 +7,7 @@ namespace Mistralys\FELHQuestEditor\CommonRecords;
 use Mistralys\FELHQuestEditor\AttributeHandling\BaseRecord;
 use Mistralys\FELHQuestEditor\AttributeHandling\RecordGroup;
 use Mistralys\FELHQuestEditor\UI;
+use Mistralys\FELHQuestEditor\UI\Icon;
 use function AppLocalize\t;
 
 class Treasure extends BaseRecord implements GameModifierContainerInterface
@@ -30,5 +31,10 @@ class Treasure extends BaseRecord implements GameModifierContainerInterface
     public function getLabel() : string
     {
         return t('Treasure');
+    }
+
+    public function getIcon() : ?Icon
+    {
+        return UI::icon()->treasure();
     }
 }
