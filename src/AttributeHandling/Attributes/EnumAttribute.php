@@ -19,6 +19,11 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
 
     private string $default = '';
 
+    public function getAttribute() : EnumAttribute
+    {
+        return $this;
+    }
+
     public function addEnumGroup(string $label) : EnumItemGroup
     {
         $group = new EnumItemGroup($this, $label);

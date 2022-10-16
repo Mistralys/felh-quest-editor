@@ -24,7 +24,15 @@ trait EnumItemContainerTrait
      */
     public function addEnumItem(string $id, string $label) : self
     {
-        return $this->registerItem(new EnumItem($id, $label));
+        $this->addEnumItemR($id, $label);
+        return $this;
+    }
+
+    public function addEnumItemR(string $id, string $label) : EnumItem
+    {
+        $item = new EnumItem($this->getAttribute(), $id, $label);
+        $this->registerItem($item);
+        return $item;
     }
 
     protected function registerItem(EnumItem $item) : self
@@ -35,10 +43,12 @@ trait EnumItemContainerTrait
 
     public function addDataCollection(BaseDataTypeCollection $collection) : self
     {
+        $group = $this->getAttribute()->addEnumGroup($collection->getCollectionLabel());
+
         $items = $collection->getAll();
 
         foreach($items as $item) {
-            $this->addEnumItem($item->getID(), $item->getLabel());
+            $group->addEnumItem($item->getID(), $item->getLabel());
         }
 
         return $this;

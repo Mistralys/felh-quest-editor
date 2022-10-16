@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
 
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
 use Mistralys\FELHQuestEditor\DataTypes\BaseDataTypeCollection;
 
 /**
@@ -19,6 +20,8 @@ interface EnumItemContainerInterface
      * @return $this
      */
     public function addEnumItem(string $id, string $label) : self;
+
+    public function addEnumItemR(string $id, string $label) : EnumItem;
 
     /**
      * Adds all items from the data type collection to the Enum.
@@ -44,4 +47,6 @@ interface EnumItemContainerInterface
      * @return EnumItem[]
      */
     public function getItems() : array;
+
+    public function getAttribute() : EnumAttribute;
 }
