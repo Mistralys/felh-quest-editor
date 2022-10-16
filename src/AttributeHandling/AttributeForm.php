@@ -7,6 +7,7 @@ namespace Mistralys\FELHQuestEditor\AttributeHandling;
 use AppUtils\JSHelper;
 use AppUtils\OutputBuffering;
 use Mistralys\FELHQuestEditor\UI;
+use function AppUtils\sb;
 
 class AttributeForm
 {
@@ -107,13 +108,32 @@ class AttributeForm
         {
             $records = $group->getRecords();
             $amount = count($records);
+            $hasTitle = $group->getMaxRecords() !== 1;
 
             foreach($records as $idx => $record)
             {
+                if($hasTitle)
+                {
+                    ?>
+                    <h3 class="record-title">
+                        <?php
+                        echo sb()
+                            ->add($record->getIcon())
+                            ->add($record->getLabel());
+
+                        $abstract = $record->getSubLabel();
+                        if(!empty($abstract)) {
+                            ?>
+                            <span class="record-subtitle">
+                                <?php echo $abstract?>
+                            </span>
+                            <?php
+                        }
+                        ?>
+                    </h3>
+                    <?php
+                }
                 ?>
-                <h3 class="record-title">
-                    <?php echo $record->getLabel() ?>
-                </h3>
                 <div class="record-body <?php if(($idx+1) === $amount) {echo 'last';} ?>">
                     <?php
                     $record->getForm()->display();
