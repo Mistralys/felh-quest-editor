@@ -14,6 +14,7 @@ use Mistralys\FELHQuestEditor\AttributeHandling\RecordGroup;
 use Mistralys\FELHQuestEditor\CommonRecords\TreasureContainerInterface;
 use Mistralys\FELHQuestEditor\CommonRecords\TreasureContainerTrait;
 use Mistralys\FELHQuestEditor\DataTypes\TacticalMapLocations;
+use Mistralys\FELHQuestEditor\UI\Icon;
 use Mistralys\FELHQuestEditor\UI\Pages\EditQuest;
 use function AppLocalize\t;
 use function AppUtils\sb;
@@ -29,6 +30,8 @@ class Quest extends BaseRecord implements TreasureContainerInterface
     public const TAG_SHORT_TEXT_DENY = 'ShortTextDeny';
     public const TAG_QUEST_CLASS = 'QuestClass';
     public const TAG_REWARD_TEXT = 'RewardText';
+    public const TAG_REPEATABLE = 'Repeatable';
+    public const TAG_ALLOW_QUEST_REJECTION = 'AllowQuestRejection';
 
     /**
      * @var QuestObjective[]
@@ -84,14 +87,14 @@ class Quest extends BaseRecord implements TreasureContainerInterface
         $general->registerBool('IsStartingPointQuest', t('Is starting point?'))
             ->setRequired();
 
-        $general->registerBool('AllowQuestRejection', t('Can be rejected?'))
+        $general->registerBool(self::TAG_ALLOW_QUEST_REJECTION, t('Can be rejected?'))
             ->setRequired();
 
         $general->registerBool('AICanGoOnQuest', t('AI compatible?'))
             ->setDefault('0')
             ->setDescription(t('Whether the AI players can go on this quest.'));
 
-        $general->registerBool('Repeatable', t('Is repeatable?'))
+        $general->registerBool(self::TAG_REPEATABLE, t('Is repeatable?'))
             ->setRequired()
             ->setDescription(t('Whether the quest can happen several times in the same game.'));
 
@@ -111,6 +114,9 @@ class Quest extends BaseRecord implements TreasureContainerInterface
         $graphics->registerMedallion('RewardImage', t('Reward image'));
 
         $graphics->registerQuestImage('Image', t('Quest image'));
+
+        $graphics->registerString('FullscreenMovie', 'Fullscreen movie')
+            ->setDescription(t('Relative path to a %1$s movie file.', sb()->code('.bik')));
 
         // ------------------------------------------------------------
         // TRIGGER
@@ -181,9 +187,19 @@ class Quest extends BaseRecord implements TreasureContainerInterface
         return $this->attributes->getString('InternalName');
     }
 
+    public function isRepeatable() : bool
+    {
+        return $this->attributes->getBool(self::TAG_REPEATABLE);
+    }
+
     public function getLabel() : string
     {
         return $this->getDisplayName();
+    }
+
+    public function getIcon() : ?Icon
+    {
+        return UI::icon()->quest();
     }
 
     public function getDisplayName() : string
