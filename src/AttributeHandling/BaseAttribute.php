@@ -6,6 +6,7 @@ namespace Mistralys\FELHQuestEditor\AttributeHandling;
 
 use AppUtils\ConvertHelper;
 use AppUtils\Interface_Stringable;
+use AppUtils\JSHelper;
 use AppUtils\OutputBuffering;
 use AppUtils\Request;
 use Mistralys\FELHQuestEditor\UI;
@@ -21,6 +22,7 @@ abstract class BaseAttribute
     private string $elementName;
     private string $default = '';
     private ?string $value = null;
+    private string $elementID;
 
     public function __construct(AttributeGroup $group, string $name, string $label)
     {
@@ -28,6 +30,7 @@ abstract class BaseAttribute
         $this->name = $name;
         $this->label = $label;
         $this->elementName = strtolower($this->group->getName().'_'.$this->getName());
+        $this->elementID = JSHelper::nextElementID();
 
         $this->init();
     }
@@ -49,10 +52,7 @@ abstract class BaseAttribute
 
     public function getElementID() : string
     {
-        return ConvertHelper::string2shortHash(sprintf(
-            'el-%s',
-            $this->getName()
-        ));
+        return $this->elementID;
     }
 
     public function isRequired() : bool
