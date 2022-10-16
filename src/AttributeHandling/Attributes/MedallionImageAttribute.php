@@ -16,6 +16,17 @@ class MedallionImageAttribute extends BaseGraphicAttribute
 
     protected function isFileValid(FileInfo $file) : bool
     {
-        return strpos($file->getBaseName(), 'M_') === 0;
+        $size = getimagesize($file->getPath());
+
+        // Must be square
+        if($size[0] !== $size[1]) {
+            return false;
+        }
+
+        if($size[0] < 256) {
+            return false;
+        }
+
+        return true;
     }
 }
