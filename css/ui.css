@@ -18,10 +18,25 @@ BODY{
 
 .record-title{
     font-size: 100%;
+    color: #cc006e;
+    margin-top:2em;
+}
+
+.record-subtitle{
+    display: block;
+    color: #a1a1a1;
+    font-size:86%;
+    font-weight: normal;
+    margin-top: 0.6em;
+}
+
+.record-subtitle CODE{
+    color: #a1a1a1;
+    font-size: 116%;
 }
 
 .record-body{
-    margin-bottom: 2rem;
+    margin-bottom: 2em;
 }
 
 .record-body.last{
@@ -57,4 +72,18 @@ BODY{
     padding: 4px;
     font-size: 11px;
     line-height: 11px;
+}
+
+.objective-progression-icon {
+    margin:0 6px;
+}
+
+.table TD.align-center,
+.table TH.align-center{
+    text-align: center;
+}
+
+.table TD.align-right,
+.table TH.align-right{
+    text-align: right;
 }
