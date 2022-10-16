@@ -22,6 +22,7 @@ abstract class BaseDataTypeCollection
         });
     }
 
+    abstract public function getCollectionLabel() : string;
     abstract protected function registerItems() : void;
 
     /**
