@@ -86,12 +86,29 @@ catch (Throwable $e)
         <script src="vendor/components/jquery/jquery.min.js"></script>
         <script src="vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="js/image-preview.js"></script>
+        <script src="js/enum-attribute.js"></script>
         <script>
             const APP_URL = '<?php echo FELHQM_WEBSERVER_URL ?>';
             const ImagePreviewer = new ImagePreview();
-            $(document).ready(function() {
-                <?php echo implode(PHP_EOL, UI::getJSAutoLoad()) ?>
-            });
+            <?php
+            $statements = UI::getJSHead();
+
+            if(!empty($statements))
+            {
+                echo implode(';'.PHP_EOL, $statements).';';
+            }
+
+            $statements = UI::getJSOnload();
+
+            if(!empty($statements))
+            {
+                ?>
+                $(function() {
+                    <?php echo implode(';'.PHP_EOL, $statements) ?>;
+                });
+                <?php
+            }
+            ?>
         </script>
     </head>
     <body>
