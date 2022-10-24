@@ -33,8 +33,7 @@ class AttributeManager
 
     public function addGroup(string $name, string $label) : AttributeGroup
     {
-        $data = $this->attribs->getData();
-        $group = new AttributeGroup($name, $label, $this->attribs);
+        $group = new AttributeGroup($this, $name, $label, $this->attribs);
         $this->registerGroup($group);
         return $group;
     }
@@ -108,5 +107,11 @@ class AttributeManager
             ),
             self::ERROR_ATTRIBUTE_NAME_NOT_FOUND
         );
+    }
+
+    public function addGroupTexts() : AttributeGroup
+    {
+        return $this->addGroup('texts', t('Texts'))
+            ->setIcon(UI::icon()->texts());
     }
 }
