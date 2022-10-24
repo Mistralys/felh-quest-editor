@@ -35,6 +35,11 @@ abstract class BaseAttribute
         $this->init();
     }
 
+    public function getAttributeManager() : AttributeManager
+    {
+        return $this->group->getAttributeManager();
+    }
+
     protected function init() : void
     {
 
