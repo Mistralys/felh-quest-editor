@@ -15,7 +15,6 @@ use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\QuestImageAttribute;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\StringAttribute;
 use Mistralys\FELHQuestEditor\DataTypes\ChampionUnits;
 use Mistralys\FELHQuestEditor\DataTypes\RegularUnits;
-use function AppLocalize\t;
 
 class AttributeGroup extends BaseGroup
 {
@@ -26,12 +25,19 @@ class AttributeGroup extends BaseGroup
      */
     private array $attribDefs = array();
     private ArrayDataCollection $values;
+    private AttributeManager $manager;
 
-    public function __construct(string $name, string $label, ArrayDataCollection $attribValues)
+    public function __construct(AttributeManager $manager, string $name, string $label, ArrayDataCollection $attribValues)
     {
+        $this->manager = $manager;
         $this->values = $attribValues;
 
          parent::__construct($name, $label);
+    }
+
+    public function getAttributeManager() : AttributeManager
+    {
+        return $this->manager;
     }
 
     private function addAttribute(BaseAttribute $attribute) : void
