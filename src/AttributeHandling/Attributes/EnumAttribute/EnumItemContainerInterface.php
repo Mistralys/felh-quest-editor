@@ -49,4 +49,6 @@ interface EnumItemContainerInterface
     public function getItems() : array;
 
     public function getAttribute() : EnumAttribute;
+
+    public function getItemsRecursive(array $result=array()) : array;
 }

@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\AttributeHandling\Attributes;
 
 use AppUtils\HTMLTag;
+use AppUtils\OutputBuffering;
 use Mistralys\FELHQuestEditor\AttributeHandling\AttributeException;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumDependencyContainerInterface;
+use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumDependencyInterface;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItem;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemContainerInterface;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemContainerTrait;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute\EnumItemGroup;
 use Mistralys\FELHQuestEditor\AttributeHandling\BaseAttribute;
+use Mistralys\FELHQuestEditor\UI;
+use function AppLocalize\pt;
 use function AppLocalize\t;
 
 class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
@@ -18,9 +23,22 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
     use EnumItemContainerTrait;
 
     private string $default = '';
+    private bool $multiple = false;
 
-    public function getAttribute() : EnumAttribute
+    /**
+     * @return $this
+     */
+    public function getAttribute() : self
     {
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeMultiple() : self
+    {
+        $this->multiple = true;
         return $this;
     }
 
@@ -46,6 +64,10 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
         return '';
     }
 
+    /**
+     * @param string $default
+     * @return $this
+     */
     public function setDefault(string $default) : self
     {
         if($this->itemIDExists($default)) {
@@ -70,11 +92,28 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
         return $this->getItemByID($value)->getLabel();
     }
 
+    protected function getClientObjectName() : string
+    {
+        return $this->getElementID().'obj';
+    }
+
     protected function displayElement() : void
     {
+        UI::addJSHead(sprintf(
+            "const %1\$s = new EnumAttribute('%2\$s')",
+            $this->getClientObjectName(),
+            $this->getElementID()
+        ));
+
+        UI::addJSOnload(sprintf(
+            "%s.Change()",
+            $this->getClientObjectName()
+        ));
+
         $select = HTMLTag::create('select')
             ->name($this->getElementName())
             ->id($this->getElementID())
+            ->attr('onchange', sprintf("%s.Change()", $this->getClientObjectName()))
             ->addClass('form-control');
 
         echo $select->renderOpen();
@@ -113,8 +152,9 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
         $optionValue = $item->getID();
 
         $option =  HTMLTag::create('option')
-            ->setEmptyAllowed(true)
+            ->setEmptyAllowed()
             ->attr('value', $optionValue)
+            ->attr('data-item-id', $item->getJSID())
             ->setContent($item->getLabel());
 
         if($optionValue === $elementValue) {
@@ -122,5 +162,120 @@ class EnumAttribute extends BaseAttribute implements EnumItemContainerInterface
         }
 
         echo $option;
+    }
+
+    public function getDescription() : string
+    {
+        $description = parent::getDescription();
+
+        $items = $this->getItemsRecursive();
+
+        foreach($items as $item)
+        {
+            $description .= $this->renderItemDescription($item);
+        }
+
+        return $description;
+    }
+
+    private function renderItemDescription(EnumItem $item) : string
+    {
+        $itemDescr = $item->getDescription();
+        $quests = $item->getRelatedQuests();
+        $dependencies = $item->getDependencies();
+
+        if(empty($itemDescr) && empty($quests) && empty($dependencies)) {
+            return '';
+        }
+
+        OutputBuffering::start();
+        ?>
+        <div class="enum-item-description" id="<?php echo $item->getJSID() ?>" style="display: none">
+            <?php
+            if(!empty($itemDescr)) {
+                echo $itemDescr.'<br>';
+            }
+
+            if(!empty($dependencies))
+            {
+                pt('Dependencies:');
+                ?>
+                <ul>
+                    <?php $this->displayDependencies($dependencies) ?>
+                </ul>
+                <?php
+            }
+
+            if(!empty($quests))
+            {
+                pt('Related quests:');
+                ?>
+                <br>
+                <ul>
+                <?php
+                foreach($quests as $quest)
+                {
+                    $label = $quest->getLabel();
+
+                    ?>
+                    <li>
+                        <?php echo $quest->getQuestID() ?>
+
+                        <?php
+                        if(!empty($label))
+                        {
+                            ?>
+                                - <?php echo $label ?>
+                            <?php
+                        }
+                        ?>
+                    </li>
+                    <?php
+                }
+                ?>
+                </ul>
+                <?php
+            }
+            ?>
+        </div>
+        <?php
+
+        return OutputBuffering::get();
+    }
+
+    /**
+     * @param EnumDependencyInterface[] $dependencies
+     * @return void
+     */
+    private function displayDependencies(array $dependencies) : void
+    {
+        foreach($dependencies as $dependency)
+        {
+            if($dependency instanceof EnumDependencyContainerInterface)
+            {
+                ?>
+                <b><?php echo $dependency->getLabel() ?></b>
+                <ul>
+                    <?php $this->displayDependencies($dependency->getDependencies()); ?>
+                </ul>
+                <?php
+                continue;
+            }
+
+            ?>
+            <li>
+                <?php
+                    echo $dependency->getDependentAttribute()->getLabel();
+
+                    if(!$dependency->isDependencyOptional()) {
+                        echo '*';
+                    }
+
+                    echo ' &raquo; ';
+                    echo $dependency->getLabel()
+                ?>
+            </li>
+            <?php
+        }
     }
 }

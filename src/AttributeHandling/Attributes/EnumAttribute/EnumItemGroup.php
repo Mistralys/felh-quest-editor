@@ -6,6 +6,7 @@ namespace Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
 
 use AppUtils\ConvertHelper;
 use Mistralys\FELHQuestEditor\AttributeHandling\Attributes\EnumAttribute;
+use Mistralys\FELHQuestEditor\AttributeHandling\BaseAttribute;
 
 class EnumItemGroup extends EnumItem implements EnumItemContainerInterface
 {
@@ -16,7 +17,7 @@ class EnumItemGroup extends EnumItem implements EnumItemContainerInterface
          parent::__construct($attribute, 'group-'.ConvertHelper::transliterate($label), $label);
     }
 
-    public function getAttribute() : EnumAttribute
+    public function getDependentAttribute() : BaseAttribute
     {
         return $this->attribute;
     }

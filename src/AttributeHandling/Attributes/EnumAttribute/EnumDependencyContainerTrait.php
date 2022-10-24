@@ -21,7 +21,7 @@ trait EnumDependencyContainerTrait
      */
     public function addDependency(string $attributeName, $description, bool $optional=false) : self
     {
-        $this->enumDependencies[] = new EnumItemDependency($attributeName, $description, $optional);
+        $this->enumDependencies[] = new EnumItemDependency($this->getEnumItem(), $attributeName, $description, $optional);
         return $this;
     }
 
@@ -30,6 +30,11 @@ trait EnumDependencyContainerTrait
         $set = new EnumItemDependencySet($this->getEnumItem(), $label);
         $this->enumDependencies[] = $set;
         return $set;
+    }
+
+    public function getDependencies() : array
+    {
+        return $this->enumDependencies;
     }
 
     public function done() : EnumItem

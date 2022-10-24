@@ -18,5 +18,8 @@ interface EnumDependencyContainerInterface extends EnumDependencyInterface
 
     public function addDependencySet(string $label) : EnumItemDependencySet;
 
-    public function getEnumItem() : EnumItem;
+    /**
+     * @return EnumDependencyInterface[]
+     */
+    public function getDependencies() : array;
 }

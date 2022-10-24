@@ -8,28 +8,37 @@ use AppUtils\Interface_Stringable;
 
 class EnumItemDependency implements EnumDependencyInterface
 {
+    use EnumDependencyTrait;
+
     private string $attributeName;
     private string $label;
     private bool $optional;
+    private EnumItem $item;
 
     /**
      * @param string $attributeName
      * @param string|Interface_Stringable $label
      * @param bool $optional
      */
-    public function __construct(string $attributeName, $label, bool $optional)
+    public function __construct(EnumItem $item, string $attributeName, $label, bool $optional)
     {
+        $this->item = $item;
         $this->optional = $optional;
         $this->attributeName = $attributeName;
         $this->label = (string)$label;
     }
 
-    public function isOptional() : bool
+    public function getEnumItem() : EnumItem
+    {
+        return $this->item;
+    }
+
+    public function isDependencyOptional() : bool
     {
         return $this->optional;
     }
 
-    public function getAttributeName() : string
+    public function getDependentAttributeName() : string
     {
         return $this->attributeName;
     }

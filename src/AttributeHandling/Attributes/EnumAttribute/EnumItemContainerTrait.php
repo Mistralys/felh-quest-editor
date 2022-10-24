@@ -153,4 +153,27 @@ trait EnumItemContainerTrait
 
         return $result;
     }
+
+    /**
+     * @param EnumItem[] $result
+     * @return EnumItem[]
+     */
+    public function getItemsRecursive(array $result=array()) : array
+    {
+        $items = $this->getItems();
+
+        foreach($items as $item)
+        {
+            if($item instanceof EnumItemGroup)
+            {
+                $result = $item->getItemsRecursive($result);
+            }
+            else
+            {
+                $result[] = $item;
+            }
+        }
+
+        return $result;
+    }
 }
