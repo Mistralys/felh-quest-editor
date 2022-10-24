@@ -11,6 +11,8 @@ use function AppLocalize\t;
 
 class Objective extends BaseRecord
 {
+    public const TAG_NAME = 'Objective';
+
     protected function registerAttributes() : void
     {
         $settings = $this->attributeManager->addGroupSettings();

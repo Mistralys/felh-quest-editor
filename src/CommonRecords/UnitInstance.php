@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\CommonRecords;
 
 use AppUtils\ArrayDataCollection;
-use AppUtils\OutputBuffering;
 use Mistralys\FELHQuestEditor\AttributeHandling\BaseRecord;
 use Mistralys\FELHQuestEditor\UI;
 use Mistralys\FELHQuestEditor\UI\Icon;
@@ -14,6 +13,8 @@ use function AppUtils\sb;
 
 class UnitInstance extends BaseRecord
 {
+    public const TAG_NAME = 'UnitInstance';
+
     private Encounter $encounter;
 
     public function __construct(Encounter $encounter, ArrayDataCollection $attribs)

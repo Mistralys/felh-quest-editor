@@ -15,6 +15,8 @@ use function AppUtils\sb;
 
 class QuestObjective extends BaseRecord implements TreasureContainerInterface
 {
+    public const TAG_NAME = 'QuestObjectiveDef';
+
     use TreasureContainerTrait;
 
     /**

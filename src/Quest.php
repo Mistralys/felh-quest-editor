@@ -23,6 +23,8 @@ class Quest extends BaseRecord implements TreasureContainerInterface
 {
     use TreasureContainerTrait;
 
+    public const TAG_NAME = 'QuestDef';
+
     public const TAG_TACTICAL_MAP_ID = 'PrefQuestLoc';
     public const TAG_DESCRIPTION = 'Description';
     public const TAG_DISPLAY_NAME = 'DisplayName';

@@ -14,6 +14,8 @@ use function AppUtils\sb;
 
 class QuestChoice extends BaseRecord
 {
+    public const TAG_NAME = 'QuestChoiceDef';
+
     private QuestObjective $objective;
     private int $number;
     private ?Encounter $encounter = null;

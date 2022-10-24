@@ -16,6 +16,8 @@ use function AppUtils\sb;
 
 class Encounter extends BaseRecord
 {
+    public const TAG_NAME = 'Encounter';
+
     private QuestChoice $choice;
     private RecordGroup $unitInstanceAttribute;
 

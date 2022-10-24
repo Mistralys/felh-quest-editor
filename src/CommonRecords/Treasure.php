@@ -12,6 +12,8 @@ use function AppLocalize\t;
 
 class Treasure extends BaseRecord implements GameModifierContainerInterface
 {
+    public const TAG_NAME = 'Treasure';
+
     use GameModifierContainerTrait;
 
     private RecordGroup $modifiersGroup;
