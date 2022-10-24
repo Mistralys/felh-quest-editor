@@ -13,6 +13,8 @@ use function AppUtils\sb;
 
 class GameModifier extends BaseRecord
 {
+    public const TAG_NAME = 'GameModifier';
+
     public const TAG_MODIFIER_TYPE = 'ModType';
     public const TAG_INTERNAL_NAME = 'InternalName';
     public const TAG_ACTION = 'Attribute';
@@ -50,9 +52,38 @@ class GameModifier extends BaseRecord
                     ->addDependency(self::TAG_INTEGER_VALUE, t('Enter the amount of the resource to add.'))
                     ->addDependency(self::TAG_RADIUS, t('Enter the tile radius in which to spawn it.'))
                     ->done()
+                ->addDependencySet(t('Create a world property'))
+                    ->addDependency(self::TAG_STRING_VALUE, sb()
+                        ->t('Set the property name.')
+                        ->t('The only one known to have been used is %1$s:', sb()->code('TD_Groundfire'))
+                        ->t('See the file %1$s.', sb()->code('data/English/Core Tiles/TD_GroundFire.xml'))
+                    )
+                    ->addDependency(self::TAG_INTEGER_VALUE, t('Set the value to %1$s.', sb()->code(30)))
+                    ->addDependency(self::TAG_RADIUS, t('Set the radius to %1$s.', sb()->code('-1')))
+                    ->done()
+                ->addDependencySet(t('Block/unblock a tile'))
+                    ->addDependency(self::TAG_BOOLEAN_VALUE, sb()
+                        ->t('Set the block state:')
+                        ->t('Active = blocked, inactive = unblocked.')
+                    )
+                    ->addDependency(self::TAG_RADIUS, t('Set this to %1$s to block the current tile.', sb()->code('1')))
+                    ->done()
                 ->done()
             ->addEnumItem('Player', t('Player modifier'))
-            ->addEnumItem('Unit', t('Unit modifier'))
+            ->addEnumItemR('Unit', t('Unit modifier'))
+                ->addDependencySet(t('Give experience'))
+                    ->addDependency(self::TAG_STRING_VALUE, t('Enter the amount of experience to give.'))
+                    ->done()
+                ->addDependencySet(t('Add a unit to current army'))
+                    ->addDependency(self::TAG_STRING_VALUE, t('Enter the unit identifier.'))
+                    ->addDependency(self::TAG_UNIT_CLASS, t('Select the unit class (important for champions).'))
+                    ->addDependency(self::TAG_INTEGER_VALUE, t('Enter a level for the unit.'), true)
+                    ->addDependency(self::TAG_STRING_VALUE_2, t('Enter a custom name for the unit.'), true)
+                    ->done()
+                ->addDependencySet(t('Change hit points'))
+                    ->addDependency(self::TAG_INTEGER_VALUE, t('Set the amount in the integer value (can be negative).'))
+                    ->done()
+            ->done()
             ->addEnumItem('Resource', t('Resource modifier'))
             ->addEnumItemR('GiveItem', t('Item modifier'))
                 ->addDependency(self::TAG_ACTION, t('Enter the item identifier.'))
@@ -60,53 +91,6 @@ class GameModifier extends BaseRecord
                 ->addDependency(self::TAG_INTEGER_VALUE, t('Usually set to 100, for unknown reasons.'))
                 ->done()
             ->setDescription(sb()
-                ->bold('Map:')
-                ->nl()
-                ->note()
-                ->add('Select the map action in the action field.')
-                ->ul(array(
-                    sb()
-                        ->add('Create world property:')
-                        ->ul(array(
-                            sprintf(
-                                'Set the property name in the string value (e.g. %1$s)',
-                                sb()->code('TD_Groundfire')
-                            ),
-                            'Set the value in the integer field.',
-                            'Set the radius to create it in (is often -1).'
-                        )),
-                    sb()
-                        ->add('Block a map tile:')
-                        ->ul(array(
-                            'Set the block state in the boolean value (true=blocked, false=unblocked).',
-                            'Set the radius for the tile (1 for the current tile).'
-                        ))
-                ))
-                ->bold('Unit mo:')
-                ->nl()
-                ->note()
-                ->add('Select the unit action in the action field.')
-                ->ul(array(
-                    sb()
-                        ->add('Give experience:')
-                        ->ul(array(
-                            'Set the amount in the integer value.'
-                        )),
-                    sb()
-                        ->add('Add unit to current army:')
-                        ->ul(array(
-                            'Set the unit name in the string value.',
-                            'Choose the unit class "Unit" for a regular unit.',
-                            'Choose the unit class "Champion" for a hero unit.',
-                            'Optional: Set the unit\'s level in the integer value.',
-                            'Optional: Set a custom unit name in the second string value.'
-                        )),
-                    sb()
-                        ->add('Change hit points:')
-                        ->ul(array(
-                            'Set the amount in the integer value (can be negative).'
-                        ))
-                ))
                 ->bold('Resource:')
                 ->nl()
                 ->note()
