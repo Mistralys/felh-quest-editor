@@ -15,7 +15,12 @@ class UI
     /**
      * @var string[]
      */
-    private static array $jsAutoLoad = array();
+    private static array $jsOnload = array();
+
+    /**
+     * @var string[]
+     */
+    private static array $jsHead = array();
 
     public static function icon() : Icon
     {
@@ -32,16 +37,28 @@ class UI
         return self::$showXMLTags;
     }
 
-    public static function addJSOnload(string $statement) : void
+    public static function addJSHead(string $statement) : void
     {
-        if(!in_array($statement, self::$jsAutoLoad)) {
-            self::$jsAutoLoad[] = $statement;
+        if(!in_array($statement, self::$jsHead)) {
+            self::$jsHead[] = rtrim($statement, ';');
         }
     }
 
-    public static function getJSAutoLoad() : array
+    public static function addJSOnload(string $statement) : void
     {
-        return self::$jsAutoLoad;
+        if(!in_array($statement, self::$jsOnload)) {
+            self::$jsOnload[] = rtrim($statement, ';');
+        }
+    }
+
+    public static function getJSOnload() : array
+    {
+        return self::$jsOnload;
+    }
+
+    public static function getJSHead() : array
+    {
+        return self::$jsHead;
     }
 
     private static ?string $version = null;
