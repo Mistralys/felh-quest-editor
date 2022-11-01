@@ -6,6 +6,9 @@ namespace Mistralys\FELHQuestEditor;
 
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\JSONFile;
+use AppUtils\Request;
+use Mistralys\FELHQuestEditor\UI\Pages\BuildCache;
 
 class FilesReader
 {
@@ -24,10 +27,16 @@ class FilesReader
      * @var string[]
      */
     private array $selected = array();
+    private ?JSONFile $cacheFile = null;
 
     public static function create() : FilesReader
     {
         return new self();
+    }
+
+    public function resetCache() : void
+    {
+        $this->cacheFile = null;
     }
 
     public function selectAllOffical() : self
@@ -81,13 +90,46 @@ class FilesReader
 
         if(!in_array($path, $this->selected, true)) {
             $this->selected[] = $path;
+            $this->resetCache();
         }
 
         return $this;
     }
 
+    public function getCacheKey() : string
+    {
+        return md5(implode(
+            ';',
+            $this->selected
+        ));
+    }
+
+    public function getCacheFile() : JSONFile
+    {
+        if(!isset($this->cacheFile))
+        {
+            $this->cacheFile = JSONFile::factory(sprintf(
+                '%s/%s.reader.cache',
+                FELHQM_CACHE_FOLDER,
+                $this->getCacheKey()
+            ));
+        }
+
+        return $this->cacheFile;
+    }
+
+    public function hasCache() : bool
+    {
+         return $this->getCacheFile()->exists();
+    }
+
     public function getRawData() : array
     {
+        if($this->hasCache())
+        {
+            return $this->loadCacheData();
+        }
+
         $reader = new QuestReader();
         $result = array();
 
@@ -101,7 +143,14 @@ class FilesReader
             }
         }
 
+        $this->getCacheFile()->putData($result, false);
+
         return $result;
+    }
+
+    private function loadCacheData() : array
+    {
+        return $this->getCacheFile()->parse();
     }
 
     public function getCollection() : QuestsCollection
@@ -119,5 +168,41 @@ class FilesReader
         }
 
         return $reader->getCollection();
+    }
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    public function getURLRefreshCache(array $params=array()) : string
+    {
+        $params[BuildCache::REQUEST_VAR_REFRESH] = 'yes';
+
+        return $this->getURLCache($params);
+    }
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    public function getURLCache(array $params=array()) : string
+    {
+        return UI::getPageURL(BuildCache::URL_NAME, $params);
+    }
+
+    public function rebuildCache() : void
+    {
+        $file = $this->getCacheFile();
+
+        if($file->exists()) {
+            $file->delete();
+        }
+
+        $this->getRawData();
+    }
+
+    public function getSelectedFiles() : array
+    {
+        return $this->selected;
     }
 }
