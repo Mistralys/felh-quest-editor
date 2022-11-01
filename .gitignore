@@ -8,3 +8,4 @@ config.php
 js/cachekey.txt
 js/md5.min.js
 js/translator.js
+*.cache
