@@ -6,6 +6,19 @@ BODY{
     color:#a1a1a1;
 }
 
+.page-title{
+    margin-bottom: 3em;
+}
+
+.page-title.with-abstract{
+    margin-bottom: 0.5em;
+}
+
+.page-abstract{
+    font-style: italic;
+    margin: 1em 0 3em 0;
+}
+
 .element-description{
     font-size: 80%;
     color: #959595;
