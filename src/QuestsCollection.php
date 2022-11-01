@@ -10,6 +10,7 @@ class QuestsCollection
 {
     public const ERROR_QUEST_ID_NOT_FOUND = 119201;
     public const ERROR_NO_QUEST_IN_REQUEST = 119202;
+    public const REQUEST_VAR_QUEST_ID = 'quest';
 
     /**
      * @var Quest[]
@@ -34,7 +35,7 @@ class QuestsCollection
 
     public function requireByRequest() : Quest
     {
-        $id = (string)Request::getInstance()->getParam('quest');
+        $id = (string)Request::getInstance()->getParam(self::REQUEST_VAR_QUEST_ID);
 
         if(!empty($id) && $this->idExists($id)) {
             return $this->getByID($id);

@@ -173,10 +173,9 @@ class Quest extends BaseRecord implements TreasureContainerInterface
      */
     public function getURLEdit(array $params=array()) : string
     {
-        $params['page'] = EditQuest::URL_NAME;
-        $params['quest'] = $this->getInternalName();
+        $params[QuestsCollection::REQUEST_VAR_QUEST_ID] = $this->getInternalName();
 
-        return Request::getInstance()->buildURL($params);
+        return UI::getPageURL(EditQuest::URL_NAME, $params);
     }
 
     public function getSourceFile() : FileInfo
