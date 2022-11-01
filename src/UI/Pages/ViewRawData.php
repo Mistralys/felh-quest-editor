@@ -7,7 +7,10 @@ namespace Mistralys\FELHQuestEditor\UI\Pages;
 use AppUtils\FileHelper;
 use AppUtils\JSHelper;
 use Mistralys\FELHQuestEditor\FilesReader;
+use Mistralys\FELHQuestEditor\Request;
 use Mistralys\FELHQuestEditor\UI\BasePage;
+use function AppLocalize\t;
+use function AppUtils\sb;
 
 class ViewRawData extends BasePage
 {
@@ -15,16 +18,24 @@ class ViewRawData extends BasePage
 
     private FilesReader $reader;
 
-    public function __construct(FilesReader $reader)
+    public function __construct(Request $request, FilesReader $reader)
     {
         $this->reader = $reader;
 
-        parent::__construct();
+        parent::__construct($request);
     }
 
     public function getTitle() : string
     {
-        return 'Raw quest data';
+        return t('Raw quest data');
+    }
+
+    public function getAbstract() : string
+    {
+        return (string)sb()
+            ->t('This shows the raw parsed individual quest data, as read from the game files.')
+            ->note()
+            ->t('While the structure is based on the source XML, it has some peculiarities based on the way the XML is parsed.');
     }
 
     public function display() : void

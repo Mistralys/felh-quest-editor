@@ -13,6 +13,7 @@ use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 use Mistralys\FELHQuestEditor\UI\BasePage;
+use function AppLocalize\t;
 
 /**
  * Image viewer to display an image from a game folder.
@@ -26,7 +27,12 @@ class ViewGraphicFile extends BasePage
 
     public function getTitle() : string
     {
-        return 'View graphic file';
+        return t('View graphic file');
+    }
+
+    public function getAbstract() : string
+    {
+        return '';
     }
 
     public function display() : void

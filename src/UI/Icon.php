@@ -156,4 +156,29 @@ class Icon implements Interface_Stringable , Interface_Classable
     {
         return $this->setType('flask-vial');
     }
+
+    public function refresh() : self
+    {
+        return $this->setType('recycle');
+    }
+
+    public function success() : self
+    {
+        return $this->setType('check');
+    }
+
+    public function warning() : self
+    {
+        return $this->setType('triangle-exclamation');
+    }
+
+    public function danger() : self
+    {
+        return $this->setType('skull-crossbones');
+    }
+
+    public function info() : self
+    {
+        return $this->setType('circle-info');
+    }
 }

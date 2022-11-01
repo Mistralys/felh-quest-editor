@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\UI\Pages;
 
 use Mistralys\FELHQuestEditor\QuestsCollection;
+use Mistralys\FELHQuestEditor\Request;
 use Mistralys\FELHQuestEditor\UI;
 use Mistralys\FELHQuestEditor\UI\BasePage;
+use function AppLocalize\t;
 use function AppUtils\sb;
 
 class QuestsList extends BasePage
@@ -15,16 +17,21 @@ class QuestsList extends BasePage
 
     private QuestsCollection $collection;
 
-    public function __construct(QuestsCollection $collection)
+    public function __construct(Request $request, QuestsCollection $collection)
     {
         $this->collection = $collection;
 
-        parent::__construct();
+        parent::__construct($request);
     }
 
     public function getTitle() : string
     {
-        return 'Quests list';
+        return t('Quests list');
+    }
+
+    public function getAbstract() : string
+    {
+        return (string)sb()->t('This shows all quests available in the selected game files.');
     }
 
     public function display() : void

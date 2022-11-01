@@ -5,25 +5,32 @@ declare(strict_types=1);
 namespace Mistralys\FELHQuestEditor\UI\Pages;
 
 use AppUtils\ConvertHelper_ThrowableInfo;
+use Mistralys\FELHQuestEditor\Request;
 use Mistralys\FELHQuestEditor\UI\BasePage;
 use Throwable;
 use function AppLocalize\pt;
+use function AppLocalize\t;
 use function AppUtils\parseThrowable;
 
 class ExceptionPage extends BasePage
 {
     private ConvertHelper_ThrowableInfo $info;
 
-    public function __construct(Throwable $e)
+    public function __construct(Request $request, Throwable $e)
     {
         $this->info = parseThrowable($e);
 
-        parent::__construct();
+        parent::__construct($request);
     }
 
     public function getTitle() : string
     {
         return 'System error';
+    }
+
+    public function getAbstract() : string
+    {
+        return '';
     }
 
     public function display() : void
